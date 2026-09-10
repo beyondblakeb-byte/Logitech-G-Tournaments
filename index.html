@@ -281,7 +281,7 @@
     </div>
   </div>
 
-  <footer>Updates automatically when the sheet changes. Refresh the page for the latest.</footer>
+  <footer>Refreshes automatically every minute.</footer>
 
 </div>
 
@@ -397,7 +397,7 @@
     document.getElementById('retryBtn').addEventListener('click', () => loadTab(activeIndex, true));
   }
 
-  async function loadTab(index, forceReload){
+  async function loadTab(index, forceReload, silent){
     activeIndex = index;
     highlightActiveTab();
     const tab = TABS[index];
@@ -407,7 +407,9 @@
       return;
     }
 
-    contentEl.innerHTML = '<div class="status">Loading standings…</div>';
+    if (!silent){
+      contentEl.innerHTML = '<div class="status">Loading standings…</div>';
+    }
 
     try {
       const res = await fetch(csvUrl(tab.gid));
@@ -417,7 +419,9 @@
       cache[tab.gid] = records;
       renderTable(records);
     } catch (err) {
-      showError('Check that the sheet is published to the web and the gid for this tab is correct.', tab.gid);
+      if (!silent){
+        showError('Check that the sheet is published to the web and the gid for this tab is correct.', tab.gid);
+      }
     }
   }
 
@@ -440,6 +444,10 @@
 
   buildTabs();
   loadTab(0);
+
+  setInterval(() => {
+    loadTab(activeIndex, true, true);
+  }, 60000);
 </script>
 
 </body>
