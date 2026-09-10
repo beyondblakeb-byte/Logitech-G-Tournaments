@@ -301,7 +301,7 @@
   let activeIndex = 0;
 
   function csvUrl(gid){
-    return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${gid}`;
+    return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${gid}&t=${Date.now()}`;
   }
 
   function parseCSV(text){
@@ -412,7 +412,7 @@
     }
 
     try {
-      const res = await fetch(csvUrl(tab.gid));
+      const res = await fetch(csvUrl(tab.gid), { cache: 'no-store' });
       if (!res.ok) throw new Error('status ' + res.status);
       const text = await res.text();
       const records = rowsToRecords(parseCSV(text));
