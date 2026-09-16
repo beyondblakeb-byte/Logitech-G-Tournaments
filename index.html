@@ -652,9 +652,24 @@
     });
   }
 
-  function resetScreenFit(){
-    wrapEl.style.transform = '';
-    wrapEl.style.transformOrigin = '';
+  function fitToViewportWidth(){
+    if (isFullscreen) return;
+    wrapEl.style.transform = 'none';
+    wrapEl.style.marginBottom = '';
+    requestAnimationFrame(() => {
+      const naturalWidth = wrapEl.offsetWidth;
+      const naturalHeight = wrapEl.offsetHeight;
+      const scale = window.innerWidth / naturalWidth;
+      if (scale > 1.02){
+        wrapEl.style.transformOrigin = 'top center';
+        wrapEl.style.transform = `scale(${scale})`;
+        wrapEl.style.marginBottom = (naturalHeight * (scale - 1)) + 'px';
+      } else {
+        wrapEl.style.transform = '';
+        wrapEl.style.transformOrigin = '';
+        wrapEl.style.marginBottom = '';
+      }
+    });
   }
 
   fullscreenBtn.addEventListener('click', () => {
@@ -672,21 +687,25 @@
     if (cache[tab.gid]){
       renderTable(cache[tab.gid], tab.scoreLabel);
     }
+    window.scrollTo(0, 0);
     if (isFullscreen){
-      window.scrollTo(0, 0);
       setTimeout(fitToScreen, 50);
     } else {
-      resetScreenFit();
-      window.scrollTo(0, 0);
+      setTimeout(fitToViewportWidth, 50);
     }
   });
 
   window.addEventListener('resize', () => {
-    if (isFullscreen) fitToScreen();
+    if (isFullscreen){
+      fitToScreen();
+    } else {
+      fitToViewportWidth();
+    }
   });
 
   buildTabs();
   loadTab(0);
+  fitToViewportWidth();
 
   setInterval(() => {
     loadTab(activeIndex, true, true);
