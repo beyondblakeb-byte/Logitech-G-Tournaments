@@ -652,31 +652,12 @@
     });
   }
 
-  function fitToViewportWidth(){
-    if (isFullscreen) return;
-    wrapEl.style.transform = 'none';
-    wrapEl.style.marginBottom = '';
-    requestAnimationFrame(() => {
-      const naturalWidth = wrapEl.offsetWidth;
-      const naturalHeight = wrapEl.offsetHeight;
-      const scale = window.innerWidth / naturalWidth;
-      if (scale > 1.02){
-        wrapEl.style.transformOrigin = 'top center';
-        wrapEl.style.transform = `scale(${scale})`;
-        wrapEl.style.marginBottom = (naturalHeight * (scale - 1)) + 'px';
-      } else {
-        wrapEl.style.transform = '';
-        wrapEl.style.transformOrigin = '';
-        wrapEl.style.marginBottom = '';
-      }
-    });
-  }
-
   fullscreenBtn.addEventListener('click', () => {
     if (!document.fullscreenElement){
       document.documentElement.requestFullscreen().catch(() => {});
     } else {
       document.exitFullscreen().catch(() => {});
+      setTimeout(() => window.location.reload(), 150);
     }
   });
 
@@ -687,20 +668,14 @@
     if (cache[tab.gid]){
       renderTable(cache[tab.gid], tab.scoreLabel);
     }
-    window.scrollTo(0, 0);
     if (isFullscreen){
+      window.scrollTo(0, 0);
       setTimeout(fitToScreen, 50);
-    } else {
-      setTimeout(fitToViewportWidth, 50);
     }
   });
 
   window.addEventListener('resize', () => {
-    if (isFullscreen){
-      fitToScreen();
-    } else {
-      fitToViewportWidth();
-    }
+    if (isFullscreen) fitToScreen();
   });
 
   buildTabs();
