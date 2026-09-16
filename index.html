@@ -83,6 +83,8 @@
   .fullscreen-btn .icon-exit{ display: none; }
   body.is-fullscreen .fullscreen-btn .icon-enter{ display: none; }
   body.is-fullscreen .fullscreen-btn .icon-exit{ display: block; }
+  body.is-fullscreen{ overflow: hidden; }
+  body.is-fullscreen .wrap{ transition: transform 0.1s ease; }
 
   header.top{
     display: flex;
@@ -570,6 +572,28 @@
 
   const fullscreenBtn = document.getElementById('fullscreenBtn');
 
+  const wrapEl = document.querySelector('.wrap');
+
+  function fitToScreen(){
+    if (!isFullscreen) return;
+    wrapEl.style.transform = 'none';
+    requestAnimationFrame(() => {
+      const naturalWidth = wrapEl.offsetWidth;
+      const naturalHeight = wrapEl.offsetHeight;
+      const scale = Math.min(
+        window.innerWidth / naturalWidth,
+        window.innerHeight / naturalHeight
+      );
+      wrapEl.style.transformOrigin = 'top center';
+      wrapEl.style.transform = `scale(${scale})`;
+    });
+  }
+
+  function resetScreenFit(){
+    wrapEl.style.transform = '';
+    wrapEl.style.transformOrigin = '';
+  }
+
   fullscreenBtn.addEventListener('click', () => {
     if (!document.fullscreenElement){
       document.documentElement.requestFullscreen().catch(() => {});
@@ -585,6 +609,16 @@
     if (cache[tab.gid]){
       renderTable(cache[tab.gid], tab.scoreLabel);
     }
+    if (isFullscreen){
+      window.scrollTo(0, 0);
+      setTimeout(fitToScreen, 50);
+    } else {
+      resetScreenFit();
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (isFullscreen) fitToScreen();
   });
 
   buildTabs();
