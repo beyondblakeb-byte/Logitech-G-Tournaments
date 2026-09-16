@@ -84,7 +84,11 @@
   body.is-fullscreen .fullscreen-btn .icon-enter{ display: none; }
   body.is-fullscreen .fullscreen-btn .icon-exit{ display: block; }
   body.is-fullscreen{ overflow: hidden; }
-  body.is-fullscreen .wrap{ transition: transform 0.1s ease; }
+  body.is-fullscreen .wrap{ transition: transform 0.1s ease; padding: 24px 24px; }
+  body.is-fullscreen header.top,
+  body.is-fullscreen .select-label,
+  body.is-fullscreen nav.tabs,
+  body.is-fullscreen footer{ display: none; }
 
   header.top{
     display: flex;
