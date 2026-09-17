@@ -275,6 +275,13 @@
     max-width: 90%;
   }
 
+  @media (min-width: 700px){
+    body.is-fullscreen .event-logo-lockup{
+      flex-wrap: nowrap;
+      max-width: 100%;
+    }
+  }
+
   .event-logo{
     max-height: 120px;
     max-width: 100%;
@@ -413,6 +420,7 @@
     color: var(--text-muted);
     margin-top: 1px;
   }
+  .loc-cell .mobile-loc{ display: none; }
 
   .flag-icon{
     width: 16px;
@@ -462,7 +470,8 @@
     thead th, td{ padding: 10px 6px; font-size: 13px; }
     thead th.loc-head{ font-size: 10px; }
     .loc-cell .venue{ display: none; }
-    .loc-cell .country{ margin-top: 0; }
+    .loc-cell > .country:not(.mobile-loc){ display: none; }
+    .loc-cell .mobile-loc{ display: block; margin-top: 0; }
     .rank-badge{ width: 26px; height: 26px; font-size: 13px; }
   }
 </style>
@@ -635,7 +644,7 @@
           <td class="rank-col"><span class="rank-badge ${badgeClass}">${pos}</span></td>
           <td class="name-cell">${escapeHtml(rec['name'] || '')}</td>
           <td class="num score-cell">${escapeHtml(rec['score'] || '')}</td>
-          <td class="loc-cell"><span class="venue">${escapeHtml(rec['location'] || '')}</span><span class="country">${countryFlag(rec['country'])}${escapeHtml(rec['country'] || '')}</span></td>
+          <td class="loc-cell"><span class="venue">${escapeHtml(rec['location'] || '')}</span><span class="country">${countryFlag(rec['country'])}${escapeHtml(rec['country'] || '')}</span><span class="country mobile-loc">${countryFlag(rec['country'])}${escapeHtml(rec['location'] || '')}</span></td>
         </tr>`;
     }).join('');
 
