@@ -38,6 +38,10 @@
     min-height: 100vh;
   }
 
+  html, body{
+    overflow-x: hidden;
+  }
+
   body{
     background-image:
       linear-gradient(180deg, rgba(0,184,252,0.06) 0%, transparent 320px),
@@ -254,9 +258,11 @@
 
   .event-logo-lockup{
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     gap: 26px;
+    row-gap: 14px;
     max-width: 90%;
   }
 
@@ -439,6 +445,11 @@
     h1{ font-size: 30px; }
     .logo-img{ height: 64px; }
     .lockup{ gap: 12px; }
+    .event-logo-lockup{ gap: 14px; row-gap: 10px; max-width: 100%; }
+    .event-logo{ max-height: 56px !important; }
+    .lockup-x{ font-size: 18px; }
+    .partner-logo img,
+    .partner-logo svg{ height: 30px; max-width: 130px; }
   }
 </style>
 </head>
