@@ -88,7 +88,7 @@
   body.is-fullscreen .fullscreen-btn .icon-enter{ display: none; }
   body.is-fullscreen .fullscreen-btn .icon-exit{ display: block; }
   body.is-fullscreen{ overflow-x: hidden; overflow-y: auto; }
-  body.is-fullscreen .wrap{ padding: 24px 24px; margin: 0; }
+  body.is-fullscreen .wrap{ padding: 24px 24px; margin: 0; max-width: 980px; }
   body.is-fullscreen header.top,
   body.is-fullscreen .select-label,
   body.is-fullscreen nav.tabs,
@@ -158,16 +158,16 @@
     background: var(--surface);
     border: 0.5px solid var(--border);
     border-radius: 14px;
-    padding: 22px;
+    padding: 24px;
     flex: 0 0 auto;
   }
 
   .fullscreen-qr img{
-    width: 200px;
-    height: 200px;
+    width: 230px;
+    height: 230px;
     display: block;
     background: #eaf6ff;
-    border-radius: 8px;
+    border-radius: 10px;
   }
 
   .fullscreen-qr span{
@@ -406,6 +406,7 @@
   }
 
   .loc-cell{ color: var(--text-secondary); }
+  .loc-cell .venue{ display: block; }
   .loc-cell .country{
     display: block;
     font-size: 12px;
@@ -450,7 +451,6 @@
   }
 
   @media (max-width: 520px){
-    thead th.loc-head, td.loc-cell{ display: none; }
     h1{ font-size: 30px; }
     .logo-img{ height: 64px; }
     .lockup{ gap: 12px; }
@@ -459,6 +459,11 @@
     .lockup-x{ font-size: 18px; }
     .partner-logo img,
     .partner-logo svg{ height: 30px; max-width: 130px; }
+    thead th, td{ padding: 10px 6px; font-size: 13px; }
+    thead th.loc-head{ font-size: 10px; }
+    .loc-cell .venue{ display: none; }
+    .loc-cell .country{ margin-top: 0; }
+    .rank-badge{ width: 26px; height: 26px; font-size: 13px; }
   }
 </style>
 </head>
@@ -630,7 +635,7 @@
           <td class="rank-col"><span class="rank-badge ${badgeClass}">${pos}</span></td>
           <td class="name-cell">${escapeHtml(rec['name'] || '')}</td>
           <td class="num score-cell">${escapeHtml(rec['score'] || '')}</td>
-          <td class="loc-cell">${escapeHtml(rec['location'] || '')}<span class="country">${countryFlag(rec['country'])}${escapeHtml(rec['country'] || '')}</span></td>
+          <td class="loc-cell"><span class="venue">${escapeHtml(rec['location'] || '')}</span><span class="country">${countryFlag(rec['country'])}${escapeHtml(rec['country'] || '')}</span></td>
         </tr>`;
     }).join('');
 
