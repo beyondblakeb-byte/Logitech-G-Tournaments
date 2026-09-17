@@ -760,17 +760,24 @@
 
   const wrapEl = document.querySelector('.wrap');
 
-  function fitToScreen(){
-    if (!isFullscreen) return;
+  function computeWrapVisualRight(){
     const naturalWidth = wrapEl.offsetWidth;
     const naturalHeight = wrapEl.offsetHeight;
-    if (!naturalWidth || !naturalHeight) return;
+    if (!naturalWidth || !naturalHeight) return null;
     const scale = Math.min(
       window.innerWidth / naturalWidth,
       window.innerHeight / naturalHeight
     );
+    const renderedWidth = naturalWidth * scale;
+    return { scale, right: window.innerWidth / 2 + renderedWidth / 2 };
+  }
+
+  function fitToScreen(){
+    if (!isFullscreen) return;
+    const info = computeWrapVisualRight();
+    if (!info) return;
     wrapEl.style.transformOrigin = 'top center';
-    wrapEl.style.transform = `scale(${scale})`;
+    wrapEl.style.transform = `scale(${info.scale})`;
     positionFullscreenQr();
   }
 
@@ -778,9 +785,11 @@
   let qrLastVisible = null;
   function positionFullscreenQr(){
     if (!isFullscreen) return;
-    const rect = wrapEl.getBoundingClientRect();
-    const spaceRight = window.innerWidth - rect.right;
-    const qrWidth = 244; // fixed known width (card padding 22*2 + image 200), avoids reading offsetWidth of a possibly-hidden element
+    const info = computeWrapVisualRight();
+    if (!info) return;
+    const wrapRight = info.right;
+    const spaceRight = window.innerWidth - wrapRight;
+    const qrWidth = 244; // known width: card padding 22*2 + image 200
     const hideThreshold = qrWidth + 24;
     const showThreshold = qrWidth + 48; // hysteresis gap so borderline widths don't flicker
     let visible = qrLastVisible;
@@ -791,6 +800,9 @@
     } else if (!visible && spaceRight >= showThreshold){
       visible = true;
     }
+    if (visible !== qrLastVisible){
+      console.log('[fullscreen-qr]', { spaceRight: Math.round(spaceRight), visible, wrapRight: Math.round(wrapRight), innerWidth: window.innerWidth, innerHeight: window.innerHeight, scale: info.scale.toFixed(3) });
+    }
     qrLastVisible = visible;
 
     if (!visible){
@@ -798,7 +810,7 @@
       return;
     }
     fullscreenQrEl.style.display = 'flex';
-    const left = rect.right + Math.max(24, (spaceRight - qrWidth) / 2);
+    const left = wrapRight + Math.max(24, (spaceRight - qrWidth) / 2);
     fullscreenQrEl.style.left = left + 'px';
   }
 
@@ -827,22 +839,27 @@
   document.addEventListener('fullscreenchange', () => {
     isFullscreen = !!document.fullscreenElement;
     document.body.classList.toggle('is-fullscreen', isFullscreen);
+    console.log('[fullscreen-qr] fullscreenchange fired, isFullscreen =', isFullscreen);
     ssPage = 0;
     const tab = TABS[activeIndex];
     if (cache[tab.gid]){
       renderTable(cache[tab.gid], tab.scoreLabel);
     }
-    if (isFullscreen){
-      window.scrollTo(0, 0);
-      setTimeout(fitToScreen, 50);
-      setTimeout(fitToScreen, 250);
-      setTimeout(fitToScreen, 600);
-      startQrPositionWatcher();
-    } else {
-      stopQrPositionWatcher();
-      qrLastVisible = null;
-      fullscreenQrEl.style.display = '';
-      fullscreenQrEl.style.left = '';
+    try {
+      if (isFullscreen){
+        window.scrollTo(0, 0);
+        setTimeout(fitToScreen, 50);
+        setTimeout(fitToScreen, 250);
+        setTimeout(fitToScreen, 600);
+        startQrPositionWatcher();
+      } else {
+        stopQrPositionWatcher();
+        qrLastVisible = null;
+        fullscreenQrEl.style.display = '';
+        fullscreenQrEl.style.left = '';
+      }
+    } catch (err) {
+      console.error('[fullscreen-qr] error in fullscreenchange handler:', err);
     }
   });
 
