@@ -88,7 +88,7 @@
   body.is-fullscreen .fullscreen-btn .icon-enter{ display: none; }
   body.is-fullscreen .fullscreen-btn .icon-exit{ display: block; }
   body.is-fullscreen{ overflow: hidden; }
-  body.is-fullscreen .wrap{ transition: transform 0.1s ease; padding: 24px 24px; }
+  body.is-fullscreen .wrap{ padding: 24px 24px; }
   body.is-fullscreen header.top,
   body.is-fullscreen .select-label,
   body.is-fullscreen nav.tabs,
@@ -762,27 +762,38 @@
 
   function fitToScreen(){
     if (!isFullscreen) return;
-    wrapEl.style.transform = 'none';
-    requestAnimationFrame(() => {
-      const naturalWidth = wrapEl.offsetWidth;
-      const naturalHeight = wrapEl.offsetHeight;
-      const scale = Math.min(
-        window.innerWidth / naturalWidth,
-        window.innerHeight / naturalHeight
-      );
-      wrapEl.style.transformOrigin = 'top center';
-      wrapEl.style.transform = `scale(${scale})`;
-      positionFullscreenQr();
-    });
+    const naturalWidth = wrapEl.offsetWidth;
+    const naturalHeight = wrapEl.offsetHeight;
+    if (!naturalWidth || !naturalHeight) return;
+    const scale = Math.min(
+      window.innerWidth / naturalWidth,
+      window.innerHeight / naturalHeight
+    );
+    wrapEl.style.transformOrigin = 'top center';
+    wrapEl.style.transform = `scale(${scale})`;
+    positionFullscreenQr();
   }
 
   const fullscreenQrEl = document.getElementById('fullscreenQr');
+  let qrLastVisible = null;
   function positionFullscreenQr(){
     if (!isFullscreen) return;
     const rect = wrapEl.getBoundingClientRect();
     const spaceRight = window.innerWidth - rect.right;
-    const qrWidth = fullscreenQrEl.offsetWidth || 244;
-    if (spaceRight < qrWidth + 24){
+    const qrWidth = 244; // fixed known width (card padding 22*2 + image 200), avoids reading offsetWidth of a possibly-hidden element
+    const hideThreshold = qrWidth + 24;
+    const showThreshold = qrWidth + 48; // hysteresis gap so borderline widths don't flicker
+    let visible = qrLastVisible;
+    if (visible === null){
+      visible = spaceRight >= showThreshold;
+    } else if (visible && spaceRight < hideThreshold){
+      visible = false;
+    } else if (!visible && spaceRight >= showThreshold){
+      visible = true;
+    }
+    qrLastVisible = visible;
+
+    if (!visible){
       fullscreenQrEl.style.display = 'none';
       return;
     }
@@ -829,6 +840,7 @@
       startQrPositionWatcher();
     } else {
       stopQrPositionWatcher();
+      qrLastVisible = null;
       fullscreenQrEl.style.display = '';
       fullscreenQrEl.style.left = '';
     }
