@@ -87,8 +87,8 @@
   .fullscreen-btn .icon-exit{ display: none; }
   body.is-fullscreen .fullscreen-btn .icon-enter{ display: none; }
   body.is-fullscreen .fullscreen-btn .icon-exit{ display: block; }
-  body.is-fullscreen{ overflow: hidden; }
-  body.is-fullscreen .wrap{ padding: 24px 24px; }
+  body.is-fullscreen{ overflow-x: hidden; overflow-y: auto; }
+  body.is-fullscreen .wrap{ padding: 24px 24px; margin: 0; }
   body.is-fullscreen header.top,
   body.is-fullscreen .select-label,
   body.is-fullscreen nav.tabs,
@@ -152,9 +152,6 @@
 
   .fullscreen-qr{
     display: none;
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
     flex-direction: column;
     align-items: center;
     gap: 12px;
@@ -162,7 +159,7 @@
     border: 0.5px solid var(--border);
     border-radius: 14px;
     padding: 22px;
-    z-index: 60;
+    flex: 0 0 auto;
   }
 
   .fullscreen-qr img{
@@ -183,6 +180,18 @@
     text-align: center;
   }
 
+  body.is-fullscreen{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 32px;
+    min-height: 100vh;
+  }
+
+  body.is-fullscreen .wrap{
+    flex: 0 0 auto;
+  }
 
   body.is-fullscreen .fullscreen-qr{
     display: flex;
@@ -670,7 +679,7 @@
     if (!countryStr) return '';
     const code = COUNTRY_CODES[countryStr.trim().toLowerCase()];
     if (!code) return '';
-    return `<img class="flag-icon" src="https://flagcdn.com/20x15/${code.toLowerCase()}.png" alt="">`;
+    return `<img class="flag-icon" src="https://flagcdn.com/20x15/${code.toLowerCase()}.png" alt="" onerror="this.style.display='none'" loading="lazy">`;
   }
 
   function showError(message, gid){
@@ -759,71 +768,19 @@
   const fullscreenBtn = document.getElementById('fullscreenBtn');
 
   const wrapEl = document.querySelector('.wrap');
+  const fullscreenQrEl = document.getElementById('fullscreenQr');
 
-  function computeWrapVisualRight(){
+  function fitToScreen(){
+    if (!isFullscreen) return;
+    wrapEl.style.zoom = 1;
     const naturalWidth = wrapEl.offsetWidth;
     const naturalHeight = wrapEl.offsetHeight;
-    if (!naturalWidth || !naturalHeight) return null;
+    if (!naturalWidth || !naturalHeight) return;
     const scale = Math.min(
       window.innerWidth / naturalWidth,
       window.innerHeight / naturalHeight
     );
-    const renderedWidth = naturalWidth * scale;
-    return { scale, right: window.innerWidth / 2 + renderedWidth / 2 };
-  }
-
-  function fitToScreen(){
-    if (!isFullscreen) return;
-    const info = computeWrapVisualRight();
-    if (!info) return;
-    wrapEl.style.transformOrigin = 'top center';
-    wrapEl.style.transform = `scale(${info.scale})`;
-    positionFullscreenQr();
-  }
-
-  const fullscreenQrEl = document.getElementById('fullscreenQr');
-  let qrLastVisible = null;
-  function positionFullscreenQr(){
-    if (!isFullscreen) return;
-    const info = computeWrapVisualRight();
-    if (!info) return;
-    const wrapRight = info.right;
-    const spaceRight = window.innerWidth - wrapRight;
-    const qrWidth = 244; // known width: card padding 22*2 + image 200
-    const hideThreshold = qrWidth + 24;
-    const showThreshold = qrWidth + 48; // hysteresis gap so borderline widths don't flicker
-    let visible = qrLastVisible;
-    if (visible === null){
-      visible = spaceRight >= showThreshold;
-    } else if (visible && spaceRight < hideThreshold){
-      visible = false;
-    } else if (!visible && spaceRight >= showThreshold){
-      visible = true;
-    }
-    if (visible !== qrLastVisible){
-      console.log('[fullscreen-qr]', { spaceRight: Math.round(spaceRight), visible, wrapRight: Math.round(wrapRight), innerWidth: window.innerWidth, innerHeight: window.innerHeight, scale: info.scale.toFixed(3) });
-    }
-    qrLastVisible = visible;
-
-    if (!visible){
-      fullscreenQrEl.style.display = 'none';
-      return;
-    }
-    fullscreenQrEl.style.display = 'flex';
-    const left = wrapRight + Math.max(24, (spaceRight - qrWidth) / 2);
-    fullscreenQrEl.style.left = left + 'px';
-  }
-
-  let qrPositionTimer = null;
-  function startQrPositionWatcher(){
-    stopQrPositionWatcher();
-    qrPositionTimer = setInterval(positionFullscreenQr, 350);
-  }
-  function stopQrPositionWatcher(){
-    if (qrPositionTimer){
-      clearInterval(qrPositionTimer);
-      qrPositionTimer = null;
-    }
+    wrapEl.style.zoom = scale;
   }
 
   fullscreenBtn.addEventListener('click', () => {
@@ -839,27 +796,18 @@
   document.addEventListener('fullscreenchange', () => {
     isFullscreen = !!document.fullscreenElement;
     document.body.classList.toggle('is-fullscreen', isFullscreen);
-    console.log('[fullscreen-qr] fullscreenchange fired, isFullscreen =', isFullscreen);
     ssPage = 0;
     const tab = TABS[activeIndex];
     if (cache[tab.gid]){
       renderTable(cache[tab.gid], tab.scoreLabel);
     }
-    try {
-      if (isFullscreen){
-        window.scrollTo(0, 0);
-        setTimeout(fitToScreen, 50);
-        setTimeout(fitToScreen, 250);
-        setTimeout(fitToScreen, 600);
-        startQrPositionWatcher();
-      } else {
-        stopQrPositionWatcher();
-        qrLastVisible = null;
-        fullscreenQrEl.style.display = '';
-        fullscreenQrEl.style.left = '';
-      }
-    } catch (err) {
-      console.error('[fullscreen-qr] error in fullscreenchange handler:', err);
+    if (isFullscreen){
+      window.scrollTo(0, 0);
+      setTimeout(fitToScreen, 50);
+      setTimeout(fitToScreen, 250);
+      setTimeout(fitToScreen, 600);
+    } else {
+      wrapEl.style.zoom = '';
     }
   });
 
