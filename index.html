@@ -153,29 +153,30 @@
     transform: translateY(-50%);
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     background: var(--surface);
     border: 0.5px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
+    border-radius: 14px;
+    padding: 22px;
     z-index: 60;
   }
 
   .fullscreen-qr img{
-    width: 140px;
-    height: 140px;
+    width: 200px;
+    height: 200px;
     display: block;
     background: #eaf6ff;
-    border-radius: 6px;
+    border-radius: 8px;
   }
 
   .fullscreen-qr span{
-    font-size: 11px;
+    font-size: 14px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--text-muted);
     font-family: 'Rajdhani', sans-serif;
   }
+
 
   body.is-fullscreen .fullscreen-qr{
     display: flex;
@@ -767,7 +768,7 @@
     if (!isFullscreen) return;
     const rect = wrapEl.getBoundingClientRect();
     const spaceRight = window.innerWidth - rect.right;
-    const qrWidth = fullscreenQrEl.offsetWidth || 172;
+    const qrWidth = fullscreenQrEl.offsetWidth || 244;
     if (spaceRight < qrWidth + 24){
       fullscreenQrEl.style.display = 'none';
       return;
