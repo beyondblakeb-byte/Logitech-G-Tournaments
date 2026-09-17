@@ -260,7 +260,7 @@
     background: var(--surface);
     border: 0.5px solid var(--border);
     border-bottom: none;
-    padding: 22px 0 16px;
+    padding: 32px 28px 28px;
     display: flex;
     justify-content: center;
   }
@@ -402,7 +402,7 @@
     color: #f6dfa0;
   }
 
-  .name-cell{ font-weight: 500; }
+  .name-cell{ font-weight: 500; overflow-wrap: anywhere; word-break: break-word; }
 
   .score-cell{
     font-family: 'Rajdhani', sans-serif;
@@ -412,7 +412,7 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .loc-cell{ color: var(--text-secondary); }
+  .loc-cell{ color: var(--text-secondary); overflow-wrap: anywhere; word-break: break-word; }
   .loc-cell .venue{ display: block; }
   .loc-cell .country{
     display: block;
@@ -469,6 +469,9 @@
     .partner-logo svg{ height: 30px; max-width: 130px; }
     thead th, td{ padding: 10px 6px; font-size: 13px; }
     thead th.loc-head{ font-size: 10px; }
+    table{ table-layout: fixed; }
+    th.loc-head, td.loc-cell{ width: 25%; }
+    th.num, td.score-cell{ width: 22%; }
     .loc-cell .venue{ display: none; }
     .loc-cell > .country:not(.mobile-loc){ display: none; }
     .loc-cell .mobile-loc{ display: block; margin-top: 0; }
