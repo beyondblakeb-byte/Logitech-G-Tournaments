@@ -791,6 +791,18 @@
     fullscreenQrEl.style.left = left + 'px';
   }
 
+  let qrPositionTimer = null;
+  function startQrPositionWatcher(){
+    stopQrPositionWatcher();
+    qrPositionTimer = setInterval(positionFullscreenQr, 350);
+  }
+  function stopQrPositionWatcher(){
+    if (qrPositionTimer){
+      clearInterval(qrPositionTimer);
+      qrPositionTimer = null;
+    }
+  }
+
   fullscreenBtn.addEventListener('click', () => {
     if (!document.fullscreenElement){
       document.documentElement.requestFullscreen().catch(() => {});
@@ -812,14 +824,22 @@
     if (isFullscreen){
       window.scrollTo(0, 0);
       setTimeout(fitToScreen, 50);
+      setTimeout(fitToScreen, 250);
+      setTimeout(fitToScreen, 600);
+      startQrPositionWatcher();
     } else {
+      stopQrPositionWatcher();
       fullscreenQrEl.style.display = '';
       fullscreenQrEl.style.left = '';
     }
   });
 
+  let resizeDebounce = null;
   window.addEventListener('resize', () => {
-    if (isFullscreen) fitToScreen();
+    if (!isFullscreen) return;
+    fitToScreen();
+    clearTimeout(resizeDebounce);
+    resizeDebounce = setTimeout(fitToScreen, 200);
   });
 
   setInterval(() => {
