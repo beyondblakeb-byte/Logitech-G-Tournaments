@@ -645,7 +645,7 @@
       return `
         <tr${rowClass}>
           <td class="rank-col"><span class="rank-badge ${badgeClass}">${pos}</span></td>
-          <td class="name-cell">${escapeHtml(rec['name'] || '')}</td>
+          <td class="name-cell">${escapeHtml(formatName(rec['name'] || ''))}</td>
           <td class="num score-cell">${escapeHtml(rec['score'] || '')}</td>
           <td class="loc-cell"><span class="venue">${escapeHtml(rec['location'] || '')}</span><span class="country">${countryFlag(rec['country'])}${escapeHtml(rec['country'] || '')}</span><span class="country mobile-loc">${countryFlag(rec['country'])}${escapeHtml(rec['location'] || '')}</span></td>
         </tr>`;
@@ -663,6 +663,15 @@
         </thead>
         <tbody>${rowsHtml}</tbody>
       </table>`;
+  }
+
+  function formatName(name){
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length <= 1) return parts[0] || '';
+    const first = parts[0];
+    const lastInitial = parts[parts.length - 1].charAt(0).toUpperCase();
+    return `${first} ${lastInitial}.`;
   }
 
   function escapeHtml(s){
