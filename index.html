@@ -170,6 +170,18 @@
     border-radius: 10px;
   }
 
+  .qr-prize-text{
+    display: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 22px;
+    line-height: 1.15;
+    letter-spacing: 0.02em;
+    text-align: center;
+    color: #ffffff;
+  }
+
   .fullscreen-qr span{
     font-size: 20px;
     font-weight: 600;
@@ -402,6 +414,30 @@
     color: #f6dfa0;
   }
 
+  tr.venice-gold{
+    background: linear-gradient(to right, rgba(242,183,5,0.10), transparent 55%);
+  }
+
+  tr.venice-gold td:first-child{
+    box-shadow: inset 3px 0 0 rgba(242,183,5,0.6);
+  }
+
+  tr.venice-gold .name-cell{
+    color: #f6dfa0;
+  }
+
+  tr.venice-papaya{
+    background: linear-gradient(to right, rgba(255,128,0,0.12), transparent 55%);
+  }
+
+  tr.venice-papaya td:first-child{
+    box-shadow: inset 3px 0 0 rgba(255,128,0,0.65);
+  }
+
+  tr.venice-papaya .name-cell{
+    color: #ffb066;
+  }
+
   .name-cell{ font-weight: 500; overflow-wrap: anywhere; word-break: break-word; }
 
   .score-cell{
@@ -532,6 +568,7 @@
 
 
   <div class="fullscreen-qr" id="fullscreenQr">
+    <div class="qr-prize-text" id="qrPrizeText">Play for<br>$100,000<br>in Prizes</div>
     <img src="data:image/png;base64,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" alt="QR code to join the Logitech G Discord">
     <span>Scan to join Discord</span>
   </div>
@@ -644,7 +681,13 @@
       const pos = rec['position'] || '';
       const posNum = parseInt(pos, 10);
       const badgeClass = rankBadgeClass(pos);
-      const rowClass = (activeIndex === 0 && posNum >= 1 && posNum <= 20) ? ' class="top20"' : '';
+      let rowClass = '';
+      if (activeIndex === 0 && posNum >= 1 && posNum <= 20){
+        rowClass = ' class="top20"';
+      } else if (TABS[activeIndex].name === 'Logitech G PLAY Venice'){
+        if (posNum === 1) rowClass = ' class="venice-gold"';
+        else if (posNum >= 2 && posNum <= 5) rowClass = ' class="venice-papaya"';
+      }
       return `
         <tr${rowClass}>
           <td class="rank-col"><span class="rank-badge ${badgeClass}">${pos}</span></td>
@@ -756,6 +799,11 @@
     const wrap = img.closest('.event-logo-wrap');
     const xSep = document.getElementById('lockupX');
     const partnerEl = document.getElementById('partnerLogo');
+
+    const qrPrizeText = document.getElementById('qrPrizeText');
+    if (qrPrizeText){
+      qrPrizeText.style.display = (tab.name === 'Superstrike Cup') ? 'block' : 'none';
+    }
 
     if (tab.logo){
       img.src = tab.logo;
