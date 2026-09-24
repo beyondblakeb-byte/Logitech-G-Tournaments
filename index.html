@@ -792,8 +792,8 @@
   }
 
   async function loadTab(index, forceReload, silent){
+    if (index !== activeIndex) ssPage = 0;
     activeIndex = index;
-    ssPage = 0;
     highlightActiveTab();
     const tab = TABS[index];
     updateEventLogo(tab);
